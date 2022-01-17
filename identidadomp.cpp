@@ -46,18 +46,18 @@ if(np>1){
 		
 		end=MPI_Wtime();
 		
-		w=(N*cols*sizeof(double))/(end-start);
+		w=(N*cols*sizeof(double))/((end-start)*1.0e6);
 		anchos[kk-1]=w;
  	     printmat( N,cols,buff);
 	}
      	std::cout.precision(7); 
       for(int ss=0;ss<np-1;++ss){
-	      std::cout<<"el ancho de banda del proceso "<<ss+1<<" al proceso 0 es: "<<std::fixed<<anchos[ss]<<"\n";
+	      std::cout<<"El ancho de banda del proceso "<<ss+1<<" al proceso 0, en megabytes por segundo, es: "<<std::fixed<<anchos[ss]<<"\n";
       }
       double prom=0;
       for(int rr=0;rr<np-1;rr++)prom+=anchos[rr];
 
-      std::cout<<"el ancho de banda promedio es: "<<std::fixed<<prom/(np-1)<<"\n";
+      std::cout<<"El ancho de banda promedio, en megabytes por segundo, es: "<<std::fixed<<prom/(np-1)<<"\n";
       delete []a;
     }
     else { /* slaves only send */
@@ -73,7 +73,7 @@ if(np>1){
 	else{
 		filldiag(N,0,N,a);
 		printmat(N,N,a);
-		std::cout<<"solo hay un proceso, por ende no hay anchos de banda de comunicaciones"<<"\n";	
+		std::cout<<"Solo hay un proceso, por ende no hay anchos de banda de comunicaciones"<<"\n";	
 	}
 }
 
