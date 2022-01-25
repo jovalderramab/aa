@@ -38,7 +38,8 @@ void send_data_collective(int size, int pid, int np)
 
   if (0 == pid) {
     int datasize = sizeof(double)*size;
-    std::cout << size << "\t" << size*datasize/(mid-start)/1.0e6<<"\t"<< size*datasize/(end-mid)/1.0e6 << "\n";
+    double Mbytes= size*(datasize/1.0e6);//me  dan errores de overflow si uso bytes
+    std::cout << size << "\t" << Mbytes/(mid-start)<<"\t"<< Mbytes/(end-mid) << "\n";
   }
   delete [] data;
 }
