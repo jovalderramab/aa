@@ -5,6 +5,7 @@
 #include <numeric>
 
 void send_data_collective(int size, int pid, int np);
+void broadcast(int size, int pid , int np);
 
 int main(int argc, char **argv)
 {
@@ -25,21 +26,33 @@ int main(int argc, char **argv)
 
 void send_data_collective(int size, int pid, int np)
 {
-  // create data buffer (all processes)
+  
   double * data = new double [size];
-  if (0 == pid) {
-    std::iota(data, data+size, 0.0); // llena como 0 1 2 3 4 
-  }
-  // send data to all processes
-  int root = 0;
+ 
+  
   double start = MPI_Wtime();
-  MPI_Bcast(&data[0], size, MPI_DOUBLE, root, MPI_COMM_WORLD);
+  MPI_Bcast(&data[0], size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  double mid = MPI_Wtime();
+  broadcast(size, pid ,  np);
   double end = MPI_Wtime();
-  // print size, time, bw in root
+
   if (0 == pid) {
     int datasize = sizeof(double)*size;
-    std::cout << datasize << "\t" << (end-start) << "\t"
-              << datasize/(end-start)/1.0e6 << "\n";
+    std::cout << size << "\t" << size*datasize/(mid-start)/1.0e6<<"\t"<< size*datasize/(end-mid)/1.0e6 << "\n";
+  }
+  delete [] data;
+}
+
+void broadcast(int size, int pid , int np)
+{
+  double * data= new double [size];
+  if (0 ==pid ) {
+    
+    for (int i = 1; i < np; i++) {
+        MPI_Send(&data[0], size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+    }
+  } else {
+    	MPI_Recv(&data[0], size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
   delete [] data;
 }
